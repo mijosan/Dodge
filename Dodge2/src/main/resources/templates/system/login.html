@@ -1,0 +1,420 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+    	
+/* sign in FORM */
+#logreg-forms{
+    width:412px;
+    margin:10vh auto;
+    background-color:#f3f3f3;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+#logreg-forms form {
+    width: 100%;
+    max-width: 410px;
+    padding: 15px;
+    margin: auto;
+}
+#logreg-forms .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+#logreg-forms .form-control:focus { z-index: 2; }
+#logreg-forms .form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+#logreg-forms .form-signin input[type="password"] {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#logreg-forms .social-login{
+    width:390px;
+    margin:0 auto;
+    margin-bottom: 14px;
+}
+#logreg-forms .social-btn{
+    font-weight: 100;
+    color:white;
+    width:190px;
+    font-size: 0.9rem;
+}
+
+#logreg-forms a{
+    display: block;
+    padding-top:10px;
+    color:lightseagreen;
+}
+
+#logreg-form .lines{
+    width:200px;
+    border:1px solid red;
+}
+
+
+#logreg-forms button[type="submit"]{ margin-top:10px; }
+
+#logreg-forms .facebook-btn{  background-color:#3C589C; }
+
+#logreg-forms .google-btn{ background-color: #DF4B3B; }
+
+#logreg-forms .form-reset, #logreg-forms .form-signup{ display: none; }
+
+#logreg-forms .form-signup .social-btn{ width:210px; }
+
+#logreg-forms .form-signup input { margin-bottom: 2px;}
+
+.form-signup .social-login{
+    width:210px !important;
+    margin: 0 auto;
+}
+
+/* Mobile */
+
+@media screen and (max-width:500px){
+    #logreg-forms{
+        width:300px;
+    }
+    
+    #logreg-forms  .social-login{
+        width:200px;
+        margin:0 auto;
+        margin-bottom: 10px;
+    }
+    #logreg-forms  .social-btn{
+        font-size: 1.3rem;
+        font-weight: 100;
+        color:white;
+        width:200px;
+        height: 56px;
+        
+    }
+    #logreg-forms .social-btn:nth-child(1){
+        margin-bottom: 5px;
+    }
+    #logreg-forms .social-btn span{
+        display: none;
+    }
+    #logreg-forms  .facebook-btn:after{
+        content:'Facebook';
+    }
+  
+    #logreg-forms  .google-btn:after{
+        content:'Google+';
+    }
+    
+}
+/*Ajax 대기화면  */
+    .wrap-loading{ /*화면 전체를 어둡게 합니다.*/
+
+    position: fixed;
+
+    left:0;
+
+    right:0;
+
+    top:0;
+
+    bottom:0;
+
+    background: rgba(0,0,0,0.2); /*not in ie */
+
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#20000000', endColorstr='#20000000');    /* ie */
+
+    
+
+}
+
+    .wrap-loading div{ /*로딩 이미지*/
+
+        position: fixed;
+
+        top:50%;
+
+        left:50%;
+
+        margin-left: -21px;
+
+        margin-top: -21px;
+
+    }
+
+    .display-none{ /*감추기*/
+
+        display:none;
+
+    }
+    /*Ajax 대기화면  */
+    .bg-secondary {
+    	background-color: #1D809F!important;
+	}
+	a{
+		color:white;
+	}
+    </style>
+    <title>로그인 | 닷지닷컴</title>
+</head>
+<body>
+<!--로딩이미지-->
+<div class="wrap-loading display-none">
+    <div><img src="../img/loading.gif" /></div>
+</div>  
+ <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand js-scroll-trigger" href="/home">닷지닷컴</a>
+      <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item mx-0 mx-lg-1">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="boards">커뮤니티</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+    <div id="logreg-forms" style="margin-top: 200px;">
+    <input type="hidden" id="result" th:value=${param.result}>
+        <form class="form-signiEn" method="post"> <!--action의 default 값 은 /login 이다. SecurityConfig에서 자동으로 설정해두었기 때문-->
+            <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> <b>로그인</b></h1>
+        
+            <input type="text" id="inputId" name="username" class="form-control" placeholder="아이디" required="" autofocus="">
+            <input type="password" id="inputPassword" name="password" class="form-control" placeholder="비밀번호" required="">
+            
+            <button class="btn btn-success btn-block" type="submit"><i class="fas fa-sign-in-alt"></i> 로그인</button>
+        </form>
+            <a href="#" id="forgot_pswd" style="padding-left: 13px;"> 아이디 / 비밀번호 찾기</a>
+            <hr>
+            <!-- <p>Don't have an account!</p>  -->
+            <button class="btn btn-primary btn-block" type="button" id="btn-signup"><i class="fas fa-user-plus"></i> 회원가입</button>
+
+            <span class="form-reset">
+                <input type="email" id="resetEmail" class="form-control" placeholder="비밀번호 안내를 받으실 이메일 주소를 적어주세요." required="" autofocus="">
+                <button id="searchBtn" class="btn btn-primary btn-block">회원정보 찾기</button>
+                <a href="#" id="cancel_reset"><i class="fas fa-angle-left"></i> Back</a>
+            </span>
+            
+            <form id="registerForm" th:action="@{/register}" class="form-signup" method="post">
+				
+                <input type="text" name="id" id="user-name" class="form-control" placeholder="아이디" required="" autofocus="">
+                <input type="email" name="email" id="user-email" class="form-control" placeholder="이메일 주소" required autofocus="">
+                <input type="password" id="user-pass" class="form-control" placeholder="비밀번호" required autofocus="">
+                <input type="password" name="password" id="user-repeatpass" class="form-control" placeholder="비밀번호 확인" required autofocus="">
+
+                <button id="registerBtn" class="btn btn-primary btn-block" type="button"><i class="fas fa-user-plus"></i> 회원가입</button>
+                <a href="#" id="cancel_signup"><i class="fas fa-angle-left"></i> Back</a>
+            </form>
+            <br>
+            
+    </div>
+     <!-- Footer -->
+  <section class="content-section" id="made">
+  <footer class="footer text-center">
+    <div class="container">
+      <ul class="list-inline mb-5">
+      	<li class="list-inline-item">
+            <a href="https://github.com/mijosan" target="_blank"><img src="../img/G.png"></a>
+        </li>
+      
+        <li class="list-inline-item">
+            <a href="https://blog.naver.com/mijosan" target="_blank"><img src="../img/N.png"></a>
+        </li>
+      </ul>
+      <p class="text-muted small mb-0">Copyright &copy; Choi Tasean. All Rights Reserved. 2019</p>
+      <br><p class="text-muted small mb-0">010 2613 7832</p>
+    </div>
+  </footer>
+  </section>
+    <script>
+    
+    function toggleResetPswd(e){
+        e.preventDefault();
+        $('#logreg-forms .form-signin').toggle() // display:block or none
+        $('#logreg-forms .form-reset').toggle() // display:block or none
+    }
+
+    function toggleSignUp(e){
+        e.preventDefault();
+        $('#logreg-forms .form-signin').toggle(); // display:block or none
+        $('#logreg-forms .form-signup').toggle(); // display:block or none
+    }
+
+    $(()=>{
+        // Login Register Form
+        $('#logreg-forms #forgot_pswd').click(toggleResetPswd);
+        $('#logreg-forms #cancel_reset').click(toggleResetPswd);
+        $('#logreg-forms #btn-signup').click(toggleSignUp);
+        $('#logreg-forms #cancel_signup').click(toggleSignUp);
+    })
+    </script>
+    <script>
+    	$(document).ready(function(){
+			var idCheck = 0;
+			var emailCheck = 0;
+			
+    		if($("#result").val() == "fail"){
+    			swal("아이디 또는 비밀번호가 다릅니다.", "다시한번 입력 하세요.", "error");
+    		}
+    		
+    		$("#user-name").focusout(function(){
+    			var id = $("#user-name").val();
+    			$.ajax({
+		            type : 'POST',
+		            data : id,
+		            url : "idCheck.do",
+		            dataType : "json", //서버가 리턴하는 타입
+		            contentType: "application/json; charset=UTF-8",
+		            success : function(data) {
+		                if (data.cnt > 0) {
+		                	swal("아이디가 존재합니다. 다른 아이디를 입력해주세요.", "", "error");
+		                	$("#user-name").val("");
+		                	idCheck = 0;
+		                } else {
+		                	swal("사용가능한 아이디입니다.", "", "success");
+		                    idCheck = 1;      
+		                }
+		            }		         
+		        });
+    		});
+    		
+    		//이메일 중복체크
+    		$("#user-email").focusout(function(){
+    			var email = $("#user-email").val();
+    			$.ajax({
+		            type : 'POST',
+		            data : email,
+		            url : "emailCheck.do",
+		            dataType : "json", //서버가 리턴하는 타입
+		            contentType: "application/json; charset=UTF-8",
+		            success : function(data) {
+		                if (data.cnt > 0) {
+		                	swal("이메일이 존재합니다. 다른 이메일을 입력해주세요.", "", "error");
+		                	$("#user-eamil").val("");
+		                	emailCheck = 0;
+		                } else {
+		                	swal("사용가능한 이메일입니다.", "", "success");
+		                    emailCheck = 1;      
+		                }
+		            }
+		        });
+    		});
+    		
+    		//이메일 회원정보 찾기
+    		$("#searchBtn").click(function(){
+    		var email = $("#resetEmail").val();
+    		
+    			$.ajax({
+    				type : 'post',
+    				url : "searchMember.do",
+    				contentType : "application/json", //서버에 보내는 타입
+    				data : email,
+    				dataType : "json", //서버가 리턴하는 타입
+    				success : function(result){
+    					if(result.cnt == 1){
+    						swal("성공적으로 이메일을 보내었습니다.", "", "success");
+    						$("#resetEmail").val("");
+    					}else{
+    						swal("등록되지 않는 이메일 입니다.", "", "error");
+    					}
+    					
+    		    	},
+    		    	beforeSend:function(){
+    		    		$('.wrap-loading').removeClass('display-none');
+    		    	},
+
+    		    	complete:function(){
+    		    	    $('.wrap-loading').addClass('display-none');
+    		    	},
+    		    	error : function(){
+    		    		swal("비정상적으로 오류로 인해 이메일을 보내지 못하였습니다.", "", "error");
+    		    	}
+    			});
+    		});
+    		
+    		$("#registerBtn").click(function(){
+    			var email = $("#user-email").val();
+    			var getMail = RegExp(/^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/);
+				var pass = $("#user-pass").val();
+				var pass2 = $("#user-repeatpass").val();
+				
+    			if($("#user-name").val() == ""){
+    				swal("아이디를 입력하세요.", "", "error");
+					$("#user-name").focus();
+					return;
+    			}
+    			
+    			if(idCheck == 0){
+    				swal("아이디가 존재합니다. 다른 아이디를 입력해주세요.", "", "error");
+    				$("#user-name").val(""); 
+    				$("#user-name").focus();
+    				return;
+    			}
+    			
+    			if(emailCheck == 0){
+    				swal("이메일이 존재합니다. 다른 이메일를 입력해주세요.", "", "error");
+    				$("#user-email").val(""); 
+    				$("#user-email").focus();
+    				return;
+    			}
+    			
+				if(email == ""){
+					swal("이메일을 입력하세요.", "", "error");
+					$("#user-email").focus();
+					return;
+				}
+				
+				//비밀번호 유효성 검사
+				if(pass == ""){
+					swal("비밀번호를 입력하세요.", "", "error");		 
+					$("#user-pass").focus();
+					return;
+				}
+				
+				if(pass2 == ""){
+					swal("비밀번호 확인을 입력하세요.", "", "error");
+					$("#user-repeatpass").focus();
+					return;
+				}
+				
+				//비밀번호 똑같은지
+		        if(pass != pass2){ 
+		        	swal("비밀번호 확인을 다시입력 하세요.", "", "error");
+			        $("#user-repeatpass").val("");
+			        $("#user-repeatpass").focus();
+		        return;
+		       }
+				      
+		        $("#registerForm")[0].submit();
+
+    		});
+    		
+    		
+    	});
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="/script.js"></script>
+</body>
+</html>

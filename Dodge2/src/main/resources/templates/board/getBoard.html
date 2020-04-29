@@ -1,0 +1,721 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<!--페북 공유-->
+	<meta property="og:url"           content="http://dodgeadmin.cafe24.com/home"/>
+	<meta property="og:type"          content="website" />
+	<meta property="og:title"         content="닷지닷컴" />
+	<meta property="og:description"   content="여러 재밌는 글들과 정보를 공유하며 놀아요 !" />
+	<meta property="og:image"         content="http://dodgeadmin.cafe24.com/img/dodge.png" />
+<!--페북 공유-->
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+ 	<!-- Bootstrap Core CSS -->
+  	<link href="../bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  	<!-- Custom Fonts -->
+  	<link href="../bootstrap/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+  	<link href="../bootstrap/vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+
+  	<!-- Custom CSS -->
+  	<link href="../bootstrap/css/stylish-portfolio.min.css" rel="stylesheet">
+  	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	
+  	<!--sweet Alert-->
+  	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+<title>글읽기 | 닷지닷컴</title>
+<style>
+	.bg-secondary {
+    	background-color: #1D809F!important;
+	}
+	a{
+		color:white;
+	}
+	.back-to-top {
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display:none;
+    
+}
+	#contentTr a{
+    	color:black;
+    }
+/* The snackbar - position it at the bottom and in the middle of the screen */
+#snackbar {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #333; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}	
+</style>
+</head>
+<body>
+
+<!-- nav -->
+<nav th:fragment="frgNav" class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top dropdown" id="mainNav">
+	<div class="container">
+		<a class="navbar-brand js-scroll-trigger" href="/home">닷지닷컴</a>
+	<button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+	<i class="fas fa-bars"></i>
+	</button>
+		<div class="collapse navbar-collapse" id="navbarResponsive">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item mx-0 mx-lg-1">
+	            	<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/boards">자유게시판</a>
+	          	</li>
+	          	<span sec:authorize="isAnonymous()">
+	          		<li class="nav-item mx-0 mx-lg-1">
+		            	<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/system/login">로그인</a>
+		          	</li>
+	          	</span> 
+
+	          	<span sec:authorize="isAuthenticated()">
+		          	<li class="nav-item mx-0 mx-lg-1">
+		            	<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/boards/like-list">즐겨찾기 목록</a>
+		          	</li>
+		        </span>
+		        <span sec:authorize="isAuthenticated()">
+		          	<li class="nav-item mx-0 mx-lg-1">
+            			<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/boards/my-list">내가 쓴 글 보기</a>
+          			</li>
+	          	</span>
+	          	<span sec:authorize="isAuthenticated()">
+		          	<li class="nav-item mx-0 mx-lg-1">
+            			<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/system/logout"><font color="red">로그아웃</font></a>
+          			</li>
+	          	</span>
+	        </ul>
+	    </div>
+	</div>
+</nav>
+<form id="insertBoardFrm" method="post" enctype="multipart/form-data"> <!--update.do 에서 MultipartFile로 받을려면 이렇게 설정해줘야한다.-->
+	<div class="container" style="margin-top: 100px;">
+		<div class="content-section-heading">
+	        <h3 class="text-secondary mb-0">Board</h3>
+	        <h2 class="mb-5"><a href="/boards" style="color:black; text-decoration:none">자유게시판</a></h2>
+		</div>
+		
+		<table class="table table-hover">
+			<tr>
+				<th colspan="2" th:text="${board.title}"/>
+			</tr>
+			<tr>
+				<td th:text="|${board.writer} ｜   ${#dates.format(board.createDate,'yyyy-MM-dd HH:mm')}|"/>
+				<td class="text-right" th:text="|조회 ${board.cnt} ｜ 댓글 ${board.cCnt}|"/>
+			</tr>
+			<tr id="contentTr">
+				<td colspan="2" th:utext="${board.content}"/>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<button type="button" class="btn btn-primary" id="likeBtn">
+						좋아요 <span class="badge badge-light" id="like"></span>
+					</button>
+					&nbsp;&nbsp;&nbsp;
+					<button type="button" class="btn btn-danger" id="disLikeBtn">
+						싫어요 <span class="badge badge-light" id="disLike"></span>
+					</button>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					첨부파일
+				</th>
+				<td class="text-right">
+					<span th:if="${board.fileName} != null and ${board.fileName} != ''">
+						<a onclick="downloadFun()" th:text="|${board.fileName} (${board.fileSize})|" style="color:blue; cursor:pointer"/>
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					공유하기
+				</th>
+				<td class="text-right">
+					<div class="fb-share-button" th:attr="data-href=|http://dodgeadmin.cafe24.com/boards?seq=${board.seq}|" data-layout="button_count" data-size="large">
+						<a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A8080%2Fboard%2FgetBoard%3Fseq%3D1&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">공유하기
+						</a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="button" class="btn btn-default pull-left" value="목록" onclick="location.href='/boards'">
+					<span sec:authorize="isAuthenticated()">
+						<input type="button" class="btn btn-default pull-left" value="답글" onclick="replyBoard()">
+					</span>
+				</td>
+				<td>
+					<span sec:authorize="isAuthenticated()">
+						<span id="gtype" th:attr="data-gtype=${board.writer}"></span> 
+						<input type="button" class="btn btn-default float-right" value="삭제" th:onclick="|deleteBoard('${board.seq}', document.getElementById('gtype').dataset.gtype)|">
+						<input type="button" class="btn btn-default float-right" value="수정" th:onclick="|updateBoard(document.getElementById('gtype').dataset.gtype, '${board.seq}')|">
+					</span>
+				</td>	
+			</tr>
+			
+			<!--댓글 작성-->
+			<tr>
+				<td colspan="2">
+					<strong>Comments</strong>&nbsp;<span class="cCnt" th:text="${board.cCnt}"></span>
+				</td>
+			</tr>
+			<span sec:authorize="isAuthenticated()">
+				<tr>
+					<td style="width: 100%" colspan="2">
+	                    <textarea class="form-control" style="width: 100%" rows="3" cols="30" id="commentArea" name="commentArea" placeholder="댓글을 입력하세요"></textarea>
+	                	<input type="button" class="btn float-right btn-success" value="등록" id="commentBtn" onclick="insertComment()">
+	                </td>
+				</tr>
+			</span>
+		</table>
+		<div id="commentList">
+
+		</div>
+		
+		<!--탑 버튼-->
+		<a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" data-toggle="tooltip" data-placement="left">
+			<i class="fas fa-angle-up">
+			</i>
+		</a>
+	</div>
+	
+	<!--다운로드 값-->
+	<input type="hidden" id="originalFileName" name="originalFileName" th:value="${board.originalFileName}"> 
+	<input type="hidden" id="fileName" name="fileName" th:value="${board.fileName}"> 
+	<input type="hidden" id="fileSize" name="fileSize" th:value="${board.fileSize}"> 
+	
+	<!--로그인 여부-->
+	<span sec:authorize="isAuthenticated()">
+		<input type="hidden" id="confirmLogin" value="true">
+	</span>
+		<input type="hidden" name="title" th:value="${board.title}">
+		<input type="hidden" name="content" th:value="${board.content}">
+		<input type="hidden" id="writer" name="writer" th:value="${board.writer}"> <!--수정할때 작성자와 로그인아이디 비교 하기위해 들고감-->
+		<input type="hidden" id="seq" name="seq" th:value="${board.seq}">
+		<input type="hidden" name="groupLayer" th:value="${board.groupLayer}">
+		<input type="hidden" name="groupOrd" th:value="${board.groupOrd}">
+		<input type="hidden" name="originNo" th:value="${board.originNo}">
+		<input type="hidden" id="cCnt" th:value="${board.cCnt}">
+		<input type="hidden" id="type2" name="type" th:value="${board.type}">
+		
+		<!--수정 or 답글 구분-->
+		<input type="hidden" id="boardCheck" name="boardCheck">
+</form>
+
+
+<!--footer-->
+<section class="content-section" id="made">
+  <footer class="footer text-center">
+    <div class="container">
+      <ul class="list-inline mb-5">
+      	<li class="list-inline-item">
+            <a href="https://github.com/mijosan" target="_blank"><img src="../img/G.png"></a>
+        </li>
+      
+        <li class="list-inline-item">
+            <a href="https://blog.naver.com/mijosan" target="_blank"><img src="../img/N.png"></a>
+        </li>
+      </ul>
+      <p class="text-muted small mb-0">Copyright &copy; Choi Tasean. All Rights Reserved. 2019</p>
+      <br><p class="text-muted small mb-0">010 2613 7832</p>
+    </div>
+  </footer>
+</section>
+<!--알림창-->
+<a id="link2">
+	<div id="snackbar"></div>
+</a>
+<!-- Load Facebook SDK for JavaScript -->
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/js/alarm.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+//댓글 삭제
+$(document).on('click', "#deleteComment", function(){
+	swal({
+		  title: "댓글을 삭제 하시겠습니까?",
+		  text: "한번 삭제하면 복구가 불가능 합니다.",
+		  icon: "warning",
+		  buttons: true,
+		  dangerMode: true,
+		})
+		.then((willDelete) => {
+		  if (willDelete) {
+			var c_writer = $(this).attr("alt").split(':');
+
+			var param = {"c_seq":c_writer[0],"b_seq":c_writer[1],"c_writer":c_writer[2]};
+			$.ajax({
+	        	type : 'post',
+	        	url : 'deleteComment',
+	        	data: JSON.stringify(param),//JSON 문자열 형식으로 바꿈
+	        	contentType : "application/json", //서버에 데이터를 보낼때
+	        	dataType : "json", //서버에서 데이터를 받을때
+	        	 success : function(result){
+	        		if(result.cnt == 1){
+	        			swal("댓글이 삭제 되었습니다.", "", "success");
+	        			getCommentList();
+	        		}else if(result.cnt == 2){
+	        			swal("로그인이 필요합니다.", "", "error");
+	        		}else{
+	        			swal("삭제할 권한이 없습니다.", "", "error");
+	        		}
+	        	},
+	        	error : function(request,status,error){
+	        		swal("댓글이 삭제되지 않았습니다.", "", "error");
+	        	}
+	        });	  
+		  } else {			  
+		    	swal("취소 되었습니다.");
+		  }
+		});
+});
+
+//댓글 수정
+function updateComment(param){
+	swal({
+		  title: "댓글을 수정 하시겠습니까?",
+		  text: "한번 수정하면 복구가 불가능 합니다.",
+		  icon: "warning",
+		  buttons: true,
+		  dangerMode: true,
+		})
+		.then((willDelete) => {
+		  if (willDelete) {
+			  	var c_seq = param.split(':')[0];
+				var comment = param.split(':')[1]; 
+				var c_writer = param.split(':')[2];
+				var param2 = c_seq +":"+ c_writer;
+				
+				//띄어쓰기, 줄바꿈 변환 (태그->적용)
+				comment = comment.replace(/<br>/gi,"\r\n");
+			    comment = comment.replace(/\u0020/gi," ");
+				var n = comment.lastIndexOf('─');
+				var comment2 = comment.substring(n+1);
+				var	output  = "<tr class='d-flex'>"; //수정폼으로 만들때 위치를 찾을려고 ID등록했음
+		        	output += "<td class='col-sm-1'>"+"<mark>"+c_writer+"</mark></td>";
+		        	output += "<td class='col-sm-10'> <textarea id='cTextarea' style='width:100%'>"+comment2+"</textarea></td>";
+		        	output += "<td class='col-sm-1'><a onclick='updateComment2(\""+param2+"\")'>수정</a><br><a onclick='getCommentList()'>취소</a></td>"
+		        	output += "</tr>";
+				    $("#"+c_seq).replaceWith(output);
+		  } else {			  
+		    	swal("취소 되었습니다.");
+		  }
+		});
+}
+function updateComment2(param){
+	var c_seq = param.split(':')[0]; //수정할 댓글번호
+	var c_writer = param.split(':')[1];
+	var c_content = $("#cTextarea").val(); //수정할 댓글내용
+	var param2 = {"c_seq":c_seq,"c_content":c_content,"c_writer":c_writer};
+
+	$.ajax({
+		type : 'post',
+		url : "updateComment",
+		contentType : "application/json",
+		data : JSON.stringify(param2),
+		dataType : "json",
+		success : function(result){
+    		if(result.cnt == 1){
+    			swal("댓글이 수정되었습니다.", "", "success");
+    			getCommentList();
+    		}else if(result.cnt == 2){
+    			swal("로그인이 필요합니다.", "", "error");
+    		}else{
+    			swal("수정할 권한이없습니다.", "", "error");
+    		}
+    	},
+    	error : function(request,status,error){
+    		swal("댓글이 수정되지 않았습니다", "", "error");
+    	}
+	});
+}
+	//댓글 등록
+	function insertComment(){
+		var c_content = $("#commentArea").val();
+		var b_seq = $("#seq").val();
+		
+		$.ajax({
+			type : 'post',
+			url : "/boards/insertComment",
+			contentType : "application/json", //서버에 보내는 타입
+			data : JSON.stringify({"b_seq":b_seq,"c_content":c_content}),
+			dataType : "json", //서버가 리턴하는 타입
+			success : function(result){
+				if(result.cnt == 1){
+					swal("댓글을 등록 하였습니다.", "", "success");
+					$("#commentArea").val("");
+					getCommentList();
+				}else{
+					swal("댓글을 등록하지 못하였습니다.", "", "error");
+				}
+	    	},
+	    	error : function(){
+	    		swal("비정상적으로 오류로 인해 댓글을 등록하지 못하였습니다.", "", "error");
+	    	}
+		});
+	}
+	function comment(replyParam){
+	    var c_content;
+	    var param;
+	    var b_seq= $("#seq").val();
+
+    	c_content = $("#replyComment2").val();
+    	var originNo = replyParam.split(':')[3];
+	    var groupOrd = replyParam.split(':')[1];
+	    var groupLayer = replyParam.split(':')[2];
+	    var cm = replyParam.split(':')[4];
+	    
+	    param = {"c_content": c_content,"b_seq":b_seq,"originNo":originNo,"groupOrd":groupOrd,"groupLayer":groupLayer};//json 형식
+	    
+	    $.ajax({
+	        type:'POST',
+	        url : "insertReplyComment",
+	        data: JSON.stringify(param),//JSON 문자열 형식으로 바꿈
+	        contentType : "application/json", //서버에 데이터를 보낼때
+	        success : function(result){
+	        	if(result.cnt == 1){
+		        	swal("댓글이 등록되었습니다.", "", "success");
+		        	getCommentList();
+	        	}
+	        },
+	        error:function(request,status,error){
+	        	swal("댓글이 등록되지 않았습니다.", "", "error");
+	       }
+	    });
+	}
+	//대댓글
+	function replyComment(replyParam){
+		
+		var replyParam = replyParam + ":cm2";
+		
+		if($("#confirmLogin").val() != null){
+				$(".rm").remove(); //그전에 생긴 대댓글 창 제거 
+				
+				var output  = "<tr class='rm d-flex'>";
+					output += 	"<td class='col-sm-2'>&nbsp;&nbsp;&nbsp;└─<mark>admin</mark></td>";
+					output += 	"<td class='col-sm-10'>"
+
+					output += 		"<textarea style='width: 100%' rows='3' cols='30' id='replyComment2' placeholder='댓글을 입력하세요'></textarea>"
+					output += 		"<input type='button' class='btn float-right btn-success' value='등록' onclick='comment(\""+replyParam+"\")'>"
+					output +=	"</td>"
+					output += "</tr>";
+					
+				$("#"+replyParam.split(':')[0]).after(output);
+		}else{
+			swal("로그인이 필요합니다.", "", "error");
+		}
+	}
+	//댓글 리스트 가져오기
+	function getCommentList(){
+		var b_seq = $("#seq").val();
+		$.ajax({
+			type : 'post',
+			url : "/boards/getCommentList",
+			contentType : "application/json", //서버에 보내는 타입
+			data : JSON.stringify({"b_seq":b_seq}),
+			dataType : "json", //서버가 리턴하는 타입
+			success : function(result){
+				if(result == ""){
+		    		$("#commentList").html("등록된 댓글이 없습니다.");
+		    	}else{
+		    		var output="<table class='table table-hover'>";
+		    		var count = 0;
+		    		for(var i in result){
+		    			count = count + 1;
+		    			//줄바꿈 처리 + 띄어쓰기
+			        	var comment = result[i].c_content;
+			        	comment = comment.replace(/\n/gi,"<br>");
+			        	comment = comment.replace(/  /gi,"&nbsp;&nbsp;");
+			        	
+			        	var param = result[i].c_seq+":"+comment+":"+result[i].c_writer;
+			        	var replyParam = result[i].c_seq+":"+result[i].groupOrd+":"+result[i].groupLayer+":"+result[i].originNo;
+			        	
+			        	if($("#writer").val() == result[i].c_writer){ //작성자의 댓글에 색을넣음
+			        		output += "<tr id='"+result[i].c_seq+"' class='d-flex table-success'>"; //수정폼으로 만들때 위치를 찾을려고 ID등록했음
+			        	}else if(result[i].groupLayer > 0 ){ //댓글이면 색바뀜
+			        		output += "<tr id='"+result[i].c_seq+"' class='d-flex table-active'>";
+			        	}else{
+			        		output += "<tr id='"+result[i].c_seq+"' class='d-flex'>"; //수정폼으로 만들때 위치를 찾을려고 ID등록했음
+			        	}
+      	
+			        	output +="	<td class='col-sm-1'>";
+			        	output +="		<mark>" + result[i].c_writer + "</mark>"
+			        	output +="	</td>";
+			        	output +="	<td class='col-sm-10'>";
+			        	output +=		comment+"<br><small>" + result[i].c_createDate + "</small><a onclick='replyComment(\""+replyParam+"\")'><img src='../img/replyIcon.png'></a>";
+			        	output +="	</td>";
+			        	output +="	<td class='col-sm-1'>";
+			        	output +="		<a onclick='updateComment(\""+param+"\")'><img src='../img/pen.png'  id='updateComment'></a>";
+			        	output +="		<img src='../img/trash.png' id='deleteComment' alt='"+result[i].c_seq+":"+result[i].b_seq+":"+result[i].c_writer+"'>";
+			        	/* output +="		<img src='../img/trash.png' id='deleteComment' alt='"+result[i].c_seq+":"+result[i].c_writer+"'>"; */
+			        	output +="	</td>";
+			        	output +="</tr>";
+		    		}
+		    		output +="</table>";
+		    		$("#commentList").html(output);
+		    		$(".cCnt").html(count);
+				}
+	    	},
+	    	error : function(){
+	    		swal("비정상적으로 오류로 인해 게시글리스트를 가져오지 못하였습니다.", "", "error");
+	    	}
+		});
+	}
+	
+	//답글 페이지 이동
+	function replyBoard(){
+		$("#boardCheck").val("reply");
+		$("#insertBoardFrm").attr("action","/boards/create");
+		$("#insertBoardFrm").attr("method","get");
+		$("#insertBoardFrm").submit();
+	}
+
+	//파일 다운로드
+	function downloadFun(){
+	
+		$("#insertBoardFrm").attr("action","download.do");
+	
+		$("#insertBoardFrm").submit();
+	
+	}
+	
+	//글삭제
+	function deleteBoard(seq, writer){
+		swal({
+			  title: "정말로 게시글을 삭제 하시겠습니까?",
+			  text: "한번 삭제하면 게시글 복구가 불가능 합니다.",
+			  icon: "warning",
+			  buttons: true,
+			  dangerMode: true,
+			})
+			.then((willDelete) => {
+			  if (willDelete) {
+				  $.ajax({
+	    				type : 'delete',
+	    				url : "/board/deleteBoard",
+	    				contentType : "application/json", //서버에 보내는 타입
+	    				data : JSON.stringify({"seq":seq,"writer":writer}),
+	    				dataType : "json", //서버가 리턴하는 타입
+	    				success : function(result){
+	    					if(result.cnt == 1){
+	    						$(location).attr('href', '/boards');
+	    					}else{
+	    						swal("삭제할수 있는 권한이 없습니다.", "", "error");
+	    					}
+	    		    	},
+	    		    
+	    		    	error : function(){
+	    		    		swal("비정상적으로 오류로 인해 게시글을 삭제하지 못하였습니다.", "", "error");
+	    		    	}
+	    			});
+				  
+			  } else {
+				  
+			    swal("취소 되었습니다.");
+			  }
+			});
+	}
+	
+	//글 수정 (아이디 검사후 submit)
+	function updateBoard(writer, seq){
+		swal({
+			  title: "정말로 수정 하시겠습니까?",
+			  text: "한번 수정하면 게시글 복구가 불가능 합니다.",
+			  icon: "warning",
+			  buttons: true,
+			  dangerMode: true,
+			})
+			.then((willDelete) => {
+			  if (willDelete) {
+
+				  $.ajax({
+	    				type : 'post',
+	    				url : "/board/updateCheck",
+	    				contentType : "application/json", //서버에 보내는 타입
+	    				data : JSON.stringify({"writer":writer, "seq":seq, "originalFileName":$("#originalFileName").val(), "fileName":$("#fileName").val(), "fileSize":$("#fileSize").val(), "type":$("#type2").val()}),
+	    				dataType : "json", //서버가 리턴하는 타입
+	    				success : function(result){
+	    					if(result.cnt == 1){
+
+	    						$("#originalFileName").val(result.originalFileName);
+	    						$("#fileName").val(result.fileName);
+	    						$("#fileSize").val(result.fileSize);
+	    						$("#seq").val(result.seq);
+	    						$("#type2").val(result.type);
+	    						$("#boardCheck").val("update");
+	    					
+	    						$("#insertBoardFrm").attr("action","/boards/update");
+	    						$("#insertBoardFrm").submit();
+	    					}else{
+	    						swal("수정할수 있는 권한이 없습니다.", "", "error");
+	    					}
+	    		    	},
+	    		    	error : function(){
+	    		    		swal("비정상적으로 오류로 인해 게시글을 수정하지 못하였습니다.", "", "error");
+	    		    	}
+	    			});
+				  
+			  } else {
+				  
+			    swal("취소 되었습니다.");
+			  }
+			});
+	}
+</script>
+
+<script>
+$(document).ready(function(){	
+	 getCommentList();
+	 $.ajax({
+			type : 'post',
+			url : "/boards/updateRecommendation",
+			contentType : "application/json", //서버에 보내는 타입
+			data : JSON.stringify({"b_seq":$("#seq").val(), "re":"likeAnddisLike"}),
+			dataType : "json", //서버가 리턴하는 타입
+			success : function(result){
+					$("#like").html(result.map.likeCnt);
+					$("#disLike").html(result.map.disLikeCnt);
+				},
+	    	error : function(){
+	    		
+	    	}
+		});
+		
+	$("#likeBtn").click(function(){
+		if($("#confirmLogin").val() == "true"){//로그인 했다면
+			 $.ajax({
+ 				type : 'post',
+ 				url : "/boards/updateRecommendation",
+ 				contentType : "application/json", //서버에 보내는 타입
+ 				data : JSON.stringify({"b_seq":$("#seq").val(), "re":"like"}),
+ 				dataType : "json", //서버가 리턴하는 타입
+ 				success : function(result){
+ 					if(result.map.cnt == 1){
+ 						swal("좋아요 !", "", "success");
+ 						$("#like").html(result.map.count);
+ 					}else if(result.map.cnt == 0){
+ 						swal("좋아요를 취소 하였습니다.", "", "error");
+ 						$("#like").html(result.map.count);
+ 					}
+ 		    	},
+ 		    	error : function(){
+ 		    		swal("비정상적으로 오류로 인해 좋아요를 하지 못하였습니다.", "", "error");
+ 		    	}
+ 			});
+		}else{
+			$(location).attr('href','/system/login');
+		}
+	});
+	
+	$("#disLikeBtn").click(function(){
+		if($("#confirmLogin").val() == "true"){
+			if($("#confirmLogin").val() == "true"){//로그인 했다면
+				 $.ajax({
+	 				type : 'post',
+	 				url : "/boards/updateRecommendation",
+	 				contentType : "application/json", //서버에 보내는 타입
+	 				data : JSON.stringify({"b_seq":$("#seq").val(), "re":"disLike"}),
+	 				dataType : "json", //서버가 리턴하는 타입
+	 				success : function(result){
+	 					if(result.map.cnt == 1){
+	 						swal("싫어요 !", "", "success");
+	 						$("#disLike").html(result.map.count);
+	 					}else if(result.map.cnt == 0){
+	 						swal("싫어요를 취소 하였습니다", "", "error");
+	 						$("#disLike").html(result.map.count);
+	 					}
+	 		    	},
+	 		    	error : function(){
+	 		    		swal("비정상적으로 오류로 인해 싫어요를 못하였습니다.", "", "error");
+	 		    	}
+	 			});
+			}else{
+				$(location).attr('href','/system/login');
+			}
+		}else{
+			$(location).attr('href','/system/login');
+		}
+	});
+	/*스크롤*/
+    $(window).scroll(function () {
+           if ($(this).scrollTop() > 50) {
+               $('#back-to-top').fadeIn();
+           } else {
+               $('#back-to-top').fadeOut();
+           }
+       });
+       // scroll body to 0px on click
+       $('#back-to-top').click(function () {
+           $('#back-to-top').tooltip('hide');
+           $('body,html').animate({
+               scrollTop: 0
+           }, 300);
+           return false;
+       });
+       
+       $('#back-to-top').tooltip('show');
+});
+
+</script>
+
+</body>
+</html>

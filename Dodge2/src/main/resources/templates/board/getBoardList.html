@@ -1,0 +1,369 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+ <!-- Bootstrap Core CSS -->
+  <link href="../bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom Fonts -->
+  <link href="../bootstrap/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+  <link href="../bootstrap/vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link href="../bootstrap/css/stylish-portfolio.min.css" rel="stylesheet">
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<title>게시판 | 닷지닷컴</title>
+<style>
+	.bg-secondary {
+    	background-color: #1D809F!important;
+	}
+	a{
+		color:white;
+	}
+	.back-to-top {
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display:none;
+}
+
+/* The snackbar - position it at the bottom and in the middle of the screen */
+#snackbar {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #333; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}	
+</style>
+
+
+</head>
+<body>
+
+<!-- nav -->
+<nav th:fragment="frgNav" class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top dropdown" id="mainNav">
+	<div class="container">
+		<a class="navbar-brand js-scroll-trigger" href="/home">닷지닷컴</a>
+	<button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+	<i class="fas fa-bars"></i>
+	</button>
+		<div class="collapse navbar-collapse" id="navbarResponsive">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item mx-0 mx-lg-1">
+	            	<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/boards">자유게시판</a>
+	          	</li>
+	          	<span sec:authorize="isAnonymous()">
+	          		<li class="nav-item mx-0 mx-lg-1">
+		            	<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/system/login">로그인</a>
+		          	</li>
+	          	</span> 
+
+	          	<span sec:authorize="isAuthenticated()">
+		          	<li class="nav-item mx-0 mx-lg-1">
+		            	<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/boards/like-list">즐겨찾기 목록</a>
+		          	</li>
+		        </span>
+		        <span sec:authorize="isAuthenticated()">
+		          	<li class="nav-item mx-0 mx-lg-1">
+            			<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/boards/my-list">내가 쓴 글 보기</a>
+          			</li>
+	          	</span>
+	          	<span sec:authorize="isAuthenticated()">
+		          	<li class="nav-item mx-0 mx-lg-1">
+            			<a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/system/logout"><font color="red">로그아웃</font></a>
+          			</li>
+	          	</span>
+	        </ul>
+	    </div>
+	</div>
+</nav>
+<!--BoardList-->
+<div class="container" style="margin-top: 100px;">
+	<div class="content-section-heading">
+        <h3 class="text-secondary mb-0">Board</h3>
+        <h2 class="mb-5"><a href="/boards" style="color:black; text-decoration:none">자유게시판</a></h2>
+	</div>
+<!--정렬 버튼-->
+<button type="button" class="btn btn-outline-primary" id="DESC">최신순</button>
+<button type="button" class="btn btn-outline-primary" id="ASC">오래된 순</button>
+<button type="button" class="btn btn-outline-primary" id="likeOrd">좋아요 순</button>
+<button type="button" class="btn btn-outline-primary" id="cCnt">댓글순</button>
+<button type="button" class="btn btn-outline-primary" id="cnt">조회순</button>
+
+<!--검색후 정렬하기 위해 저장-->
+<input type="hidden" th:value="${searchCondition}" id="con">
+<input type="hidden" th:value="${searchKeyword}" id="key">
+
+<!--알림창-->
+<a id="link2">
+	<div id="snackbar"></div>
+</a>
+<br><br>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+		        <th class="text-center">번호</th>
+		        <th class="text-center" style="width:60%">제목</th>
+		        <th class="text-center">작성자</th>
+		        <th class="text-center">날짜</th>
+		        <th class="text-center">조회수</th>
+		        <th class="text-center">좋아요</th>
+			</tr>
+	    </thead>
+	    <tbody>
+			<tr th:each="board : ${boardList}">
+		        <td class="text-center" th:text="${board.seq}"/>		      
+				<td class="text-left">
+					<span th:if="${board.type} == 1">
+						<img src="../img/notice.png">&nbsp;<b>
+					</span>
+					<span th:if="${board.likeCnt} >= 3">
+						<img src="../img/star.png">&nbsp;<b>
+					</span>
+					<a th:href="@{'/boards/' + ${board.seq}}" th:text="${board.title}" style="color:black"/>
+					
+					<span th:if="${board.cCnt} > 0">
+						<font color="red" th:text="|[${board.cCnt}]|"></font>
+					</span>
+					<span th:if="${board.fileName} != null and ${board.fileName} != ''">
+						<img src="../img/fileIcon.png">
+					</span>
+					<span th:if="${#strings.contains(board.content, '<img src=')}">
+						<img src="../img/imageIcon.png">
+					</span>
+					<span th:if="${board.newDate != null}">
+						<img src="../img/newIcon.png">
+					</span>
+				</td>
+		        <td class="text-center" th:text="${board.writer}"/>
+		        <td class="text-center" th:text="${#dates.format(board.createDate,'yyyy-MM-dd HH:mm')}"/>
+		        <td class="text-center" th:text="${board.cnt}"/>
+		        <td class="text-center" th:text="${board.likeCnt}" style="color:red"/>
+	      	</tr>
+	    </tbody>
+	</table>
+	
+	
+	<!--3추글-->
+	<input type="button" class="btn btn-default float-left" value="3추천글" id="3re">
+
+	
+	<!--글쓰기 버튼-->
+	<span sec:authorize="isAuthenticated()">
+		<input type="button" class="btn btn-default float-right" value="글쓰기" onclick="location.href='/boards/create'" formmethod="post">
+	</span>
+
+	<!--페이징-->
+	<span th:if="${boardList.totalElements != 0}">
+		<ul class="pagination justify-content-center">
+			<!--   첫페이지 <<   -->
+	   		<li class="page-item">
+		      	<a class="page-link" aria-label="First" th:href="@{boards(pageNum=1, searchCondition=${searchCondition}, searchKeyword=${searchKeyword}, sort=${sort}, likeBoard=${likeBoard})}">
+			        <span aria-hidden="true">&laquo;</span>
+			        <span class="sr-only">First</span>
+		      	</a>
+			</li>
+		
+			<!--   이전페이지 <   -->
+	   		<li class="page-item">
+		      	<a class="page-link" aria-label="Previous" th:href="@{boards(pageNum=${boardList.number == 0} ? '1' : ${boardList.number}, searchCondition=${searchCondition}, searchKeyword=${searchKeyword}, sort=${sort}, likeBoard=${likeBoard})}">
+			        <span aria-hidden="true">&lsaquo;</span>
+			        <span class="sr-only">Previous</span>
+		      	</a>
+			</li>
+			
+			<!--페이지 번호 -->
+		    <li th:each="page : ${#numbers.sequence(1,boardList.totalPages)}" th:class="${boardList.number+1 == page} ? 'page-item active' : 'page-item'">
+				<a class="page-link" th:text="${page}" th:href="@{boards(pageNum=${page}, searchCondition=${searchCondition}, searchKeyword=${searchKeyword}, sort=${sort}, likeBoard=${likeBoard})}"/>
+		    </li>
+		    
+		    <!--   다음페이지 >   -->
+		    <li class="page-item">
+		    	<a class="page-link" aria-label="Next" th:href="@{boards(pageNum=${boardList.number+1 == boardList.totalPages} ? ${boardList.number+1} : ${boardList.number+2}, searchCondition=${searchCondition}, searchKeyword=${searchKeyword}, sort=${sort}, likeBoard=${likeBoard})}">
+			        <span aria-hidden="true">&rsaquo;</span>
+			        <span class="sr-only">Next</span>
+		      	</a>
+		    </li>
+		    
+		    <!--   끝페이지 >>   -->
+	   		<li class="page-item">
+		      	<a class="page-link" aria-label="Last" th:href="@{boards(pageNum=${boardList.totalPages}, searchCondition=${searchCondition}, searchKeyword=${searchKeyword}, sort=${sort})}">
+		       		<span aria-hidden="true">&raquo;</span>
+		       		<span class="sr-only">Last</span>
+		      	</a>
+		    </li>
+	 	</ul>
+	</span>
+	<span th:if="${boardList.totalElements == 0}">
+	<br>
+		<div align="center">
+	        <h3>검색된 결과가 없습니다.</h3>
+     	</div>
+    <br>
+	</span>
+	
+	<!-- 검색  -->
+	<form th:action="@{/boards}" method="get">
+		<table class="table table-hover">
+			<tr>
+				<td align="center">
+					<select name="searchCondition">
+						<option value="TITLE">제목</option>
+						<option value="CONTENT">내용</option>
+						<option value="TITLEORCONTENT">제목+내용</option>
+						<option value="WRITER">작성자</option>
+					</select>
+					<input name="searchKeyword" type="text"/>
+					<input type="submit" value="검색" class="btn btn-default"/>
+				</td>
+			</tr>
+		</table>
+	</form>
+	
+	<!--탑 버튼-->
+	<a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" data-toggle="tooltip" data-placement="left">
+		<i class="fas fa-angle-up">
+		</i>
+	</a>
+</div> 
+<!--boardList-->
+
+<!--footer-->
+<section class="content-section" id="made">
+  <footer class="footer text-center">
+    <div class="container">
+      <ul class="list-inline mb-5">
+      	<li class="list-inline-item">
+            <a href="https://github.com/mijosan" target="_blank"><img src="../img/G.png"></a>
+        </li>
+      
+        <li class="list-inline-item">
+            <a href="https://blog.naver.com/mijosan" target="_blank"><img src="../img/N.png"></a>
+        </li>
+      </ul>
+      <p class="text-muted small mb-0">Copyright &copy; Choi Tasean. All Rights Reserved. 2019</p>
+      <br><p class="text-muted small mb-0">010 2613 7832</p>
+    </div>
+  </footer>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/js/alarm.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+
+$(document).ready(function(){
+	
+	//3추천
+	$("#3re").click(function(){
+		var url = "/boards?likeBoard=3&sort=DESC";
+		$(location).attr("href", url);
+	})
+	
+	//최신순
+	$("#DESC").click(function(){
+		
+		var url = "/boards?sort=DESC";
+		var url2 = "&searchCondition=" + $("#con").val() + "&searchKeyword=" + $("#key").val();
+		$(location).attr("href", url+url2);
+	})
+	
+	//오래된 순
+	$("#ASC").click(function(){
+		var url = "/boards?sort=ASC";
+		var url2 = "&searchCondition=" + $("#con").val() + "&searchKeyword=" + $("#key").val();
+		$(location).attr("href", url+url2);
+	})
+	
+	//좋아요 순
+	$("#likeOrd").click(function(){
+		var url = "/boards?sort=likeOrd";
+		var url2 = "&searchCondition=" + $("#con").val() + "&searchKeyword=" + $("#key").val();
+		$(location).attr("href", url+url2);
+	})
+	
+	//댓글순
+	$("#cCnt").click(function(){
+		var url = "/boards?sort=cCnt";
+		var url2 = "&searchCondition=" + $("#con").val() + "&searchKeyword=" + $("#key").val();
+		$(location).attr("href", url+url2);
+	})
+	
+	//조회순
+	$("#cnt").click(function(){
+		var url = "/boards?sort=cnt";
+		var url2 = "&searchCondition=" + $("#con").val() + "&searchKeyword=" + $("#key").val();
+		$(location).attr("href", url+url2);
+	})
+    
+	/*스크롤*/
+    $(window).scroll(function () {
+           if ($(this).scrollTop() > 50) {
+               $('#back-to-top').fadeIn();
+           } else {
+               $('#back-to-top').fadeOut();
+           }
+       });
+       // scroll body to 0px on click
+       $('#back-to-top').click(function () {
+           $('#back-to-top').tooltip('hide');
+           $('body,html').animate({
+               scrollTop: 0
+           }, 300);
+           return false;
+       });
+       
+       $('#back-to-top').tooltip('show');
+ 
+	      
+});
+</script>
+
+</body>
+</html>
