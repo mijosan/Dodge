@@ -224,7 +224,7 @@ public class BoardController implements ApplicationContextAware{
 	@GetMapping("/boards/create")
 	public String insertBoard(Model model, Board board) {
 		model.addAttribute("board", board); //답글 구분을 위해 가져감
-		return "/board/insertBoard";
+		return "board/insertBoard";
 	}
 	
 	@PostMapping(value= {"/boards"})
