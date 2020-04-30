@@ -372,9 +372,9 @@ public class BoardServiceImpl implements BoardService{
 			
 			if(board.getGroupLayer() != null) {
 				for(int i=0;i<board.getGroupLayer();i++) {
-					var = var + "  ";
+					var = var + "¡¡¡¡";
 					if(i == board.getGroupLayer()-1) {
-						var = var + "Re ";
+						var = var + "Re : ";
 					}
 				}
 			}
