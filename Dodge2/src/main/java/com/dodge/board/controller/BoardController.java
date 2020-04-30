@@ -303,13 +303,13 @@ public class BoardController implements ApplicationContextAware{
 
 		model.addAttribute("board", board);
 
-		return "/board/updateBoard";
+		return "board/updateBoard";
 	}
 	
 	//파일 다운로드
 	@RequestMapping("/boards/download.do")
 	public ModelAndView download(HttpServletRequest request, ModelAndView mv){
-		String SAVE_PATH = "/home/hosting_users/dodgeadmin/tomcat/webapps/ROOT/WEB-INF/classes/static/file/";
+		String SAVE_PATH = "/home/ec2-user/apps/Dodge/Dodge2/src/main/resources/static/file/";
 		String fullPath = SAVE_PATH+request.getParameter("originalFileName");
 	
 		File file = new File(fullPath);
@@ -334,7 +334,7 @@ public class BoardController implements ApplicationContextAware{
             String oldName = request.getHeader("file-name");
        
             // 파일 기본경로 _ 상세경로
-            String filePath = "/home/hosting_users/dodgeadmin/tomcat/webapps/ROOT/WEB-INF/classes/static/editor/photoUpload/";
+            String filePath = "/home/ec2-user/apps/Dodge/Dodge2/src/main/resources/static/editor/photoUpload/";
             String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss")
                           .format(System.currentTimeMillis()))
                           .append(UUID.randomUUID().toString())
@@ -354,7 +354,7 @@ public class BoardController implements ApplicationContextAware{
             sb = new StringBuffer();
             sb.append("&bNewLine=true")
               .append("&sFileName=").append(oldName)
-              .append("&sFileURL=").append("http://dodgeadmin.cafe24.com/editor/photoUpload/")
+              .append("&sFileURL=").append("http://http://54.180.7.238:8080/editor/photoUpload/")
                                                   
         .append(saveName);
     

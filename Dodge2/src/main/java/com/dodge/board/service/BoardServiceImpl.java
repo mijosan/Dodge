@@ -404,7 +404,7 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public void insertBoard(MultipartFile mf, Board board) throws IllegalStateException, IOException {
 		
-		String SAVE_PATH="/home/hosting_users/dodgeadmin/tomcat/webapps/ROOT/WEB-INF/classes/static/file/";
+		String SAVE_PATH="/home/ec2-user/apps/Dodge/Dodge2/src/main/resources/static/file/";
 		
 		//파일 업로드 처리
   		if(!mf.isEmpty()) {
