@@ -354,7 +354,7 @@ public class BoardController implements ApplicationContextAware{
             sb = new StringBuffer();
             sb.append("&bNewLine=true")
               .append("&sFileName=").append(oldName)
-              .append("&sFileURL=").append("http://http://54.180.7.238:8080/editor/photoUpload/")
+              .append("&sFileURL=").append("http://54.180.7.238:8080/editor/photoUpload/")
                                                   
         .append(saveName);
     
