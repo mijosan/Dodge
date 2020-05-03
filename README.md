@@ -17,8 +17,10 @@ AWS EC2에 배포 하였습니다. 또한 SSL 인증서를 적용하여 보안�
 > [데모사이트](https://www.dodgedot.ml/)
 
 ## 사용기술
+![캡처](https://user-images.githubusercontent.com/49933141/80899570-46053a00-8d4c-11ea-9127-6138c953a721.PNG)
 
 ## 프로젝트 구조
+![캡처222](https://user-images.githubusercontent.com/49933141/80899843-59b0a080-8d4c-11ea-8d34-7d27c789bff9.PNG)
 
 ## 주요기능
   * Polling 방식 알림 구현
