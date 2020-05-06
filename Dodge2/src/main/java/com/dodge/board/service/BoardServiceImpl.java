@@ -375,6 +375,7 @@ public class BoardServiceImpl implements BoardService{
 					var = var + "　　　";
 					if(i == board.getGroupLayer()-1) {
 						var = var + "└─ ";
+						System.out.println(var + " 이므니다 !!!!");
 					}
 				}
 			}

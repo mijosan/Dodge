@@ -166,7 +166,7 @@
 					<span th:if="${board.likeCnt} >= 3">
 						<img src="../img/star.png">&nbsp;<b>
 					</span>
-					<a th:href="@{'/boards/' + ${board.seq}}" th:utext="${board.title}" style="color:black"/>
+					<a th:href="@{'/boards/' + ${board.seq}}" th:text="${board.title}" style="color:black"/>
 					
 					<span th:if="${board.cCnt} > 0">
 						<font color="red" th:text="|[${board.cCnt}]|"></font>
