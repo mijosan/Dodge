@@ -160,9 +160,9 @@ public class BoardServiceImpl implements BoardService{
 			
 			if(board.getGroupLayer() != null) {
 				for(int i=0;i<board.getGroupLayer();i++) {
-					var = var + "¡¡¡¡¡¡";
+					var = var + "==========";
 					if(i == board.getGroupLayer()-1) {
-						var = var + "¦¦¦¡ ";
+						var = var + " RE : ";
 					}
 				}
 			}
@@ -249,9 +249,9 @@ public class BoardServiceImpl implements BoardService{
 			
 			if(comment.getGroupLayer() != null) {
 				for(int i=0;i<comment.getGroupLayer();i++) {
-					var = var + "¡¡¡¡¡¡";
+					var = var + "==========";
 					if(i == comment.getGroupLayer()-1) {
-						var = var + "¦¦¦¡ ";
+						var = var + " RE : ";
 					}
 				}
 			}
@@ -372,9 +372,9 @@ public class BoardServiceImpl implements BoardService{
 			
 			if(board.getGroupLayer() != null) {
 				for(int i=0;i<board.getGroupLayer();i++) {
-					var = var + "¡¡¡¡¡¡";
+					var = var + "==========";
 					if(i == board.getGroupLayer()-1) {
-						var = var + "¦¦¦¡ ";
+						var = var + " RE : ";
 					}
 				}
 			}
